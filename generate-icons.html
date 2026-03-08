@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SIFAU - Gerador de Ícones PNG</title>
+  <style>
+    body { font-family: Arial; background: #1e293b; color: white; text-align: center; padding: 40px; }
+    canvas { border: 2px solid #334155; margin: 10px; border-radius: 16px; }
+    button { background: #3b82f6; color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 8px; cursor: pointer; margin: 8px; font-weight: bold; }
+    button:hover { background: #2563eb; }
+    .row { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+    h1 { color: #60a5fa; }
+    p { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <h1>🛡️ SIFAU — Gerador de Ícones</h1>
+  <p>Clique nos botões para baixar cada ícone PNG</p>
+  
+  <div class="row">
+    <div>
+      <h3>192x192</h3>
+      <canvas id="c192" width="192" height="192"></canvas><br>
+      <button onclick="download('c192', 'icon-192.png')">⬇️ Baixar icon-192.png</button>
+    </div>
+    <div>
+      <h3>512x512</h3>
+      <canvas id="c512" width="512" height="512"></canvas><br>
+      <button onclick="download('c512', 'icon-512.png')">⬇️ Baixar icon-512.png</button>
+    </div>
+    <div>
+      <h3>512x512 (Maskable)</h3>
+      <canvas id="cmask" width="512" height="512"></canvas><br>
+      <button onclick="download('cmask', 'icon-maskable.png')">⬇️ Baixar icon-maskable.png</button>
+    </div>
+  </div>
+
+  <script>
+    function drawIcon(canvas, maskable) {
+      const ctx = canvas.getContext('2d');
+      const s = canvas.width;
+      const scale = s / 512;
+
+      // Background
+      const bgGrad = ctx.createLinearGradient(0, 0, s, s);
+      bgGrad.addColorStop(0, '#0f2557');
+      bgGrad.addColorStop(0.4, '#1e3a8a');
+      bgGrad.addColorStop(1, '#1d4ed8');
+
+      if (maskable) {
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, s, s);
+      } else {
+        const r = 108 * scale;
+        ctx.beginPath();
+        ctx.roundRect(0, 0, s, s, r);
+        ctx.fillStyle = bgGrad;
+        ctx.fill();
+      }
+
+      // Grid sutil
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1 * scale;
+      for (let i = 1; i < 4; i++) {
+        const pos = (128 * i) * scale;
+        ctx.beginPath(); ctx.moveTo(pos, 0); ctx.lineTo(pos, s); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, pos); ctx.lineTo(s, pos); ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.scale(scale, scale);
+
+      // Escudo
+      ctx.beginPath();
+      ctx.moveTo(256, 62);
+      ctx.lineTo(400, 132);
+      ctx.quadraticCurveTo(400, 290, 256, 408);
+      ctx.quadraticCurveTo(112, 290, 112, 132);
+      ctx.closePath();
+      
+      const shieldGrad = ctx.createLinearGradient(0, 62, 0, 408);
+      shieldGrad.addColorStop(0, '#ffffff');
+      shieldGrad.addColorStop(1, '#dbeafe');
+      ctx.fillStyle = shieldGrad;
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 4;
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+
+      // Borda dourada do escudo
+      const goldGrad = ctx.createLinearGradient(112, 62, 400, 408);
+      goldGrad.addColorStop(0, '#f59e0b');
+      goldGrad.addColorStop(1, '#d97706');
+      ctx.strokeStyle = goldGrad;
+      ctx.lineWidth = 5;
+      ctx.globalAlpha = 0.8;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Skyline
+      ctx.fillStyle = 'rgba(30, 58, 138, 0.1)';
+      ctx.fillRect(152, 280, 24, 60);
+      ctx.fillRect(182, 260, 20, 80);
+      ctx.fillRect(208, 290, 18, 50);
+      ctx.fillRect(288, 275, 22, 65);
+      ctx.fillRect(316, 255, 18, 85);
+      ctx.fillRect(340, 285, 20, 55);
+
+      // Lupa - círculo
+      ctx.beginPath();
+      ctx.arc(256, 210, 56, 0, Math.PI * 2);
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.lineWidth = 11;
+      ctx.globalAlpha = 0.9;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Vidro sutil
+      ctx.beginPath();
+      ctx.arc(256, 210, 44, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(30, 58, 138, 0.06)';
+      ctx.fill();
+
+      // Reflexo
+      ctx.save();
+      ctx.translate(242, 194);
+      ctx.rotate(-30 * Math.PI / 180);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 16, 10, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fill();
+      ctx.restore();
+
+      // Cabo da lupa
+      ctx.beginPath();
+      ctx.moveTo(296, 250);
+      ctx.lineTo(334, 288);
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.9;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      ctx.beginPath();
+      ctx.moveTo(296, 250);
+      ctx.lineTo(334, 288);
+      ctx.strokeStyle = goldGrad;
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.6;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Checkmark na lupa
+      const greenGrad = ctx.createLinearGradient(236, 228, 280, 194);
+      greenGrad.addColorStop(0, '#10b981');
+      greenGrad.addColorStop(1, '#059669');
+      ctx.beginPath();
+      ctx.moveTo(236, 212);
+      ctx.lineTo(250, 228);
+      ctx.lineTo(280, 194);
+      ctx.strokeStyle = greenGrad;
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // Estrela dourada
+      ctx.fillStyle = '#f59e0b';
+      ctx.globalAlpha = 0.7;
+      drawStar(ctx, 256, 90, 5, 12, 6);
+      ctx.globalAlpha = 1;
+
+      // Texto SIFAU
+      ctx.font = '900 62px "Segoe UI", Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+      ctx.letterSpacing = '10px';
+      ctx.fillText('SIFAU', 256, 442);
+      ctx.shadowColor = 'transparent';
+
+      // Linha dourada
+      ctx.fillStyle = goldGrad;
+      ctx.globalAlpha = 0.7;
+      ctx.beginPath();
+      ctx.roundRect(168, 454, 176, 3, 1.5);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Subtexto
+      ctx.font = '400 14px "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fillText('FISCALIZAÇÃO URBANA', 256, 478);
+
+      ctx.restore();
+    }
+
+    function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+      let rot = Math.PI / 2 * 3;
+      const step = Math.PI / spikes;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerR);
+      for (let i = 0; i < spikes; i++) {
+        ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+        rot += step;
+        ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+        rot += step;
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Renderizar
+    window.onload = () => {
+      drawIcon(document.getElementById('c192'), false);
+      drawIcon(document.getElementById('c512'), false);
+      drawIcon(document.getElementById('cmask'), true);
+    };
+  </script>
+</body>
+</html>
