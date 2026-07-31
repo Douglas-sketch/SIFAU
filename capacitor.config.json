@@ -1,0 +1,46 @@
+{
+  "appId": "br.sifau.app",
+  "appName": "SIFAU",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "plugins": {
+    "Camera": {
+      "saveToGallery": false,
+      "quality": 72,
+      "width": 1280,
+      "height": 1280
+    },
+    "Geolocation": {
+      "enableHighAccuracy": true,
+      "timeout": 10000,
+      "maximumAge": 60000
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#1e40af"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#1e40af",
+      "showSpinner": true,
+      "androidSpinnerStyle": "large",
+      "spinnerColor": "#ffffff"
+    }
+  },
+  "ios": {
+    "scheme": "SIFAU",
+    "limitsNavigationsToAppBoundDomains": true
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}

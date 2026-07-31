@@ -1,8 +1,9 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "sifau",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "description": "SIFAU — Sistema municipal de Fiscalização e Atendimento Urbano",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

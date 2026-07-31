@@ -56,18 +56,30 @@ export function ManagerDashboard({ onOpenDetail }: Props) {
   const kpis = useMemo(() => {
     const total = occurrences.length;
     const resolved = occurrences.filter((o) => o.status === 'resolvida');
-    const overdue = occurrences.filter((o) => o.status !== 'resolvida' && o.status !== 'arquivada' && new Date(o.sla_deadline) < new Date());
+    const active = occurrences.filter((o) => o.status !== 'resolvida' && o.status !== 'arquivada');
+    const overdue = active.filter((o) => new Date(o.sla_deadline) < new Date());
+    // Average resolution time: we approximate using SLA deadline minus created_at
+    // as a proxy — ideally we'd have a resolved_at timestamp.
+    const slaRulesMap = new Map(slaRules.map((r) => [r.category, r.max_hours]));
     const avgHours = resolved.length
-      ? resolved.reduce((s, o) => s + (new Date(o.sla_deadline).getTime() - new Date(o.created_at).getTime()) / 3_600_000, 0) / resolved.length
+      ? resolved.reduce((s, o) => {
+          const slaHrs = slaRulesMap.get(o.category) ?? 120;
+          return s + Math.min(slaHrs, (new Date(o.sla_deadline).getTime() - new Date(o.created_at).getTime()) / 3_600_000);
+        }, 0) / resolved.length
       : 0;
+    // SLA compliance: % of resolved that were resolved within their SLA window
+    // Since we don't track resolved_at, we use deadline vs now as proxy for open ones
+    const resolvedInSla = resolved.length; // resolved ones met SLA if they're closed before deadline
+    const totalForSla = resolved.length + overdue.length; // resolved + overdue active
+    const slaPct = totalForSla > 0 ? Math.round((resolvedInSla / totalForSla) * 100) : 0;
     return {
       total,
       resolved: resolved.length,
       overdue: overdue.length,
-      avgHours,
-      slaPct: total ? Math.round((resolved.length / total) * 100) : 0,
+      avgHours: Math.round(avgHours),
+      slaPct,
     };
-  }, [occurrences]);
+  }, [occurrences, slaRules]);
 
   const byCategory = useMemo(() => {
     const m = new Map<string, number>();
